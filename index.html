@@ -1,0 +1,52 @@
+<html>
+<head>
+	<title>A simple Map</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet' />
+</head>
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+<body>
+
+	<div id="map"></div>
+
+	<script type="text/javascript">
+		L.mapbox.accessToken = 'pk.eyJ1IjoibHV0aGZpaGFyaXoiLCJhIjoiZjIyMjc3ZDYxZTRiMTg5YzRlOTY0OWE4N2QwYTkzNTUifQ.qevXygnJMUS_b-PXnHs_gQ';		
+		var map = L.mapbox.map('map', 'luthfihariz.c4b20d16');
+
+		var locations = L.mapbox.featureLayer().addTo(map);
+		locations.loadURL('kebakaran_hutan.geojson');
+
+		locations.on('ready', function(){
+			locations.eachLayer(function(locale){
+				var prop = locale.feature.properties;
+				var popup = "<h3>"+prop.bencana+"</h3><div>"+
+							"Lokasi : "+prop.lokasi+
+							"<br/>Koordinat : "+locale.getLatLng()+
+							"<br/>Korban : "+prop.korban+
+							"<br/>Kerugian : "+prop.kerugian
+							"</div>";
+
+				locale.on('click', function(e){
+					map.panTo(locale.getLatLng());
+				});
+
+				locale.bindPopup(popup);				
+			})
+		});
+
+		locations.on('layeradd', function(e){
+			var marker = e.layer;
+			marker.setIcon(L.icon({
+				iconUrl: 'red_dot.png',
+				iconSize: [10, 10],
+				popupAnchor: [0, -34]
+			}));
+		});
+
+	</script>
+</body>
+</html>
